@@ -51,13 +51,15 @@ python main_local.py
 
 ## How to Use the Application
 
-1. Click on the "Upload Image" button to upload an image.
+1. Set the  resolution and click on the "Upload Image" button to upload an image.
 
-2. Set the parameters for the zoom animation such as the resolution, prompt, quality, and amount.
+2. Set the parameters such as the prompt, quality, and amount.
 
-3. Click on the "Generate" button to start the inpainting process and generate the zoom animation.
+3. Click on the "Generate" button to start the inpainting process.
 
-4. Once the process is finished, you can view the generated images and download the zoom animation as a video file.
+4. Once the process is finished, you can view the generated images.
+
+5. Once you have at least 3 pictures, a 'generate zoom clip' button will appear to generate the video
 
 ## Using the API Version
 

@@ -1,5 +1,19 @@
 # AIRobin's SD AutoZoom 🎥
 
+
+
+https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/cd73af2d-6c67-4410-9d54-4895a9212016
+
+
+
+https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/f32ea539-7cd0-4498-bef5-e876923ce7e1
+
+
+
+https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/d95738f8-3907-458e-8933-ed98902dbd36
+
+
+
 This project is a web application that allows users to create zoom animations from images using AI.
 
 ## Project Structure
@@ -81,7 +95,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```
 If this command fails, make sure to enable virtualization capabilities in your computer's BIOS/UEFI. A successful output will print The operation completed successfully.
 
-![Output from running the above commands successfully. Should read "The operation completed successfully"](link-to-image)
+Output from running the above commands successfully. Should read "The operation completed successfully"
 
 ### 2.3. Reboot
 Before moving forward, make sure you reboot your computer so that Windows 11 will have WSL2 and virtualization available to it.

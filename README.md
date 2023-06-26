@@ -1,17 +1,15 @@
 # AIRobin's SD AutoZoom 🎥
-
-
-
+<details>
+  <summary>Examples</summary>
 https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/cd73af2d-6c67-4410-9d54-4895a9212016
-
-
-
+</details>
+<details>
+  <summary>Examples</summary>
 https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/f32ea539-7cd0-4498-bef5-e876923ce7e1
 
 
-
 https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/d95738f8-3907-458e-8933-ed98902dbd36
-
+</details>
 
 
 This project is a web application that allows users to create zoom animations from images using AI.

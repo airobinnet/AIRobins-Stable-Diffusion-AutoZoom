@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIRobin's SD AutoZoom 🎥</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #1a1a2e, #16213e);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .upload {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 1rem;
+            background: #1a1a2e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload:hover {
+            background: #16213e;
+        }
+
+        .upload input {
+            display: none;
+        }
+
+        .cropper-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000007b;
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+        }
+
+        .cropper-container {
+            width: 80%;
+            max-width: 600px;
+            background: #222;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cropper-wrapper {
+            width: 100%;
+            height: 0;
+            padding-bottom: 100%;
+            position: relative;
+        }
+
+        .cropper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .cropper-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .cropper-controls button {
+            background: #4b4e6d;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cropper-controls button:hover {
+            background: #8d93ab;
+        }
+
+        .image-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: space-around;
+        }
+
+        .image {
+            width: 100%;
+            max-width: 200px;
+            position: relative;
+        }
+
+        .image img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .image .delete {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #000;
+            color: #fff;
+            border-radius: 0 5px 0 5px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image .delete:hover {
+            background: #8d93ab;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .form-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            margin-right: 1rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            max-width: 200px;
+            background: #1a1a2e;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem;
+            color: #fff;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            background: #16213e;
+        }
+
+        .form-group input[type="number"] {
+            width: 60px;
+        }
+
+        .form-group input[type="number"]::-webkit-inner-spin-button,
+        .form-group input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+
+        .form-group button {
+            background: #4b4e6d;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background: #8d93ab;
+        }
+
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #00000066;
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading-spinner i {
+            font-size: 3rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .generated-images {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0000007b;
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .generated-images .image-wrapper {
+            width: 80%;
+            max-width: 600px;
+            background: #222;
+            border-radius: 5px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .generated-images .image-wrapper img {
+            width: 100%;
+            max-width: 512px;
+            border-radius: 5px;
+        }
+
+        .generated-images .image-controls {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .generated-images .image-controls button {
+            background: #4b4e6d;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .generated-images .image-controls button:hover {
+            background: #8d93ab;
+        }
+    </style>
+</head>
+<body>
+    <h1>AIRobin's SD AutoZoom 🎥</h1>
+    <div class="container">
+        <div class="upload">
+            <input type="file" id="uploadImage">
+            <i class="fas fa-upload"></i> Upload Image
+        </div>
+        <div class="form-group">
+            <label for="resolution">Resolution (API version only supports 512x512):</label>
+            <select id="resolution">
+                <option value="512_512">512x512</option>
+                <option value="512_768">512x768</option>
+                <option value="512_1024">512x1024</option>
+                <option value="768_512">768x512</option>
+                <option value="768_768">768x768</option>
+                <option value="768_1024">768x1024</option>
+                <option value="1024_512">1024x512</option>
+                <option value="1024_768">1024x768</option>
+                <option value="1024_1024">1024x1024</option>
+            </select>
+    </div>
+        <div class="image-container"></div>
+
+        <form class="form">
+            <div class="form-group">
+                <label for="prompt">Prompt:</label>
+                <input type="text" id="prompt">
+            </div>
+            <div class="form-group">
+                <label for="quality">Quality:</label>
+                <select id="quality">
+                    <option value="1">Test</option>
+                    <option value="50">Low</option>
+                    <option value="250">Medium</option>
+                    <option value="500">High</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount:</label>
+                <input type="number" id="amount" min="1" max="4" value="1">
+            </div>
+            <div class="form-group">
+                <button type="submit">Generate</button>
+                <button id="createZoomClip" style="display: none;">Create Zoom Clip</button>
+            </div>
+            
+        </form>
+
+        <div class="video-container" style="display: none;">
+            <video id="videoPlayer" controls></video>
+        </div>
+    </div>
+
+    <div class="cropper-modal">
+        <div class="cropper-container">
+            <div class="cropper-wrapper">
+                <img src="" alt="Image to crop" class="cropper">
+            </div>
+            <div class="cropper-controls">
+                <button id="cropCancel">Cancel</button>
+                <button id="cropConfirm">Crop</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+    </div>
+
+    <div class="generated-images">
+        <div class="image-wrapper">
+            <img src="" alt="Generated image">
+            <div class="image-controls">
+                <button id="prevImage">&lt; Prev</button>
+                <button id="retryImage">Retry</button>
+                <button id="selectImage">Select</button>
+                <button id="nextImage">Next &gt;</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let cropper = null;
+    let image_base64 = null;
+
+    function updateCreateZoomClipButtonVisibility() {
+        const imageContainer = document.querySelector('.image-container');
+        const images = imageContainer.querySelectorAll('.image img');
+        const createZoomClipButton = document.getElementById('createZoomClip');
+        createZoomClipButton.style.display = images.length >= 2 ? 'inline-block' : 'none';
+    }
+
+
+    document.getElementById('uploadImage').addEventListener('change', function (event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const image = document.querySelector('.cropper');
+        image.src = e.target.result;
+        const cropperModal = document.querySelector('.cropper-modal');
+        cropperModal.style.display = 'flex';
+        if (cropper) {
+            cropper.destroy();
+        }
+        const resolution = document.getElementById('resolution').value.split('_');
+        const width = resolution[0];
+        const height = resolution[1];
+        const aspectRatio = width / height;
+        cropper = new Cropper(image, {
+            aspectRatio: aspectRatio,
+            viewMode: 1,
+            autoCropArea: 1,
+            cropBoxMovable: true,
+            cropBoxResizable: true,
+            zoomable: true,
+            ready: function () {
+                cropper.setCropBoxData({
+                    left: 0,
+                    top: 0,
+                    width: width,
+                    height: height,
+                });
+            },
+            
+        });
+    };
+    reader.readAsDataURL(file);
+});
+
+document.getElementById('cropCancel').onclick = function () {
+    const cropperModal = document.querySelector('.cropper-modal');
+    cropperModal.style.display = 'none';
+    cropper.destroy();
+    cropper = null;
+};
+
+document.getElementById('cropConfirm').onclick = function () {
+    const resolution = document.getElementById('resolution').value.split('_');
+    const width = resolution[0];
+    const height = resolution[1];
+    const canvas = cropper.getCroppedCanvas({ width: width, height: height });
+    const img = document.createElement('img');
+    img.src = canvas.toDataURL('image/png');
+    image_base64 = img.src;
+    const imageContainer = document.querySelector('.image-container');
+    const imageWrapper = document.createElement('div');
+    imageWrapper.className = 'image';
+    imageWrapper.appendChild(img);
+    const deleteButton = document.createElement('button');
+    deleteButton.className = 'delete';
+    deleteButton.innerHTML = 'Delete';
+    deleteButton.onclick = function () {
+        imageContainer.removeChild(imageWrapper);
+        updateCreateZoomClipButtonVisibility();
+    };
+    imageWrapper.appendChild(deleteButton);
+    imageContainer.appendChild(imageWrapper);
+    const cropperModal = document.querySelector('.cropper-modal');
+    cropperModal.style.display = 'none';
+    cropper.destroy();
+    cropper = null;
+    updateCreateZoomClipButtonVisibility();
+};
+document.querySelector('.upload').addEventListener('click', function () {
+    document.getElementById('uploadImage').click();
+});
+
+document.getElementById('createZoomClip').addEventListener('click', async function (event) {
+    event.preventDefault();
+    const imageContainer = document.querySelector('.image-container');
+    const images = imageContainer.querySelectorAll('.image img');
+    const imagePaths = Array.from(images).map(img => img.src);
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    loadingSpinner.style.display = 'flex';
+    const data = new FormData();
+    for (let path of imagePaths) {
+        if (path.startsWith('data:image')) {
+            data.append('image_paths[]', path);
+        } else {
+            let base64 = await getBase64FromUrl(path);
+            data.append('image_paths[]', base64);
+        }
+    }
+    fetch('/make_video', {
+        method: 'POST',
+        body: data
+    })
+    .then(response => response.text())
+    .then(videoPath => {
+        const videoPlayer = document.getElementById('videoPlayer');
+        videoPlayer.src = videoPath;
+        videoPlayer.parentElement.style.display = 'flex';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        loadingSpinner.style.display = 'none';
+    });
+    
+});
+
+const getBase64FromUrl = async (url) => {
+  const data = await fetch(url);
+  const blob = await data.blob();
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(blob); 
+    reader.onloadend = () => {
+      const base64data = reader.result;   
+      resolve(base64data);
+    }
+  });
+}
+
+document.querySelector('.form').addEventListener('submit', async function (event) {
+    event.preventDefault();
+    const prompt = document.getElementById('prompt').value;
+    const quality = document.getElementById('quality').value;
+    const amount = document.getElementById('amount').value;
+    const loadingSpinner = document.querySelector('.loading-spinner');
+    loadingSpinner.style.display = 'flex';
+    const imageContainer = document.querySelector('.image-container');
+    const imageCount = imageContainer.querySelectorAll('.image').length;
+    const images = imageContainer.querySelectorAll('.image img');
+    const imgUrl = images[images.length - 1].src
+    let base64_img = imgUrl;
+    if (imgUrl.startsWith('data:image')) {
+        base64_img = imgUrl;
+    } else {
+        base64_img = await getBase64FromUrl(imgUrl);
+    }
+    
+    const data = {
+        cropped_image: base64_img,
+        new_prompt: prompt,
+        num_inference: quality,
+        target: '',
+        amount: amount,
+        number: imageCount
+    };
+
+    fetch('/inpaint', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(response => {
+        console.log(response);
+        let new_image_paths = Array.isArray(response) ? response : [response];
+        let currentIndex = 0;
+        const img = document.querySelector('.generated-images .image-wrapper img');
+        console.log(new_image_paths);
+        img.src = new_image_paths[currentIndex];
+        const generatedImages = document.querySelector('.generated-images');
+        generatedImages.style.display = 'flex';
+
+        document.getElementById('prevImage').onclick = function () {
+            if (currentIndex > 0) {
+                currentIndex--;
+            }
+            img.src = new_image_paths[currentIndex];
+        };
+
+        document.getElementById('nextImage').onclick = function () {
+            if (currentIndex < new_image_paths.length - 1) {
+                currentIndex++;
+            }
+            img.src = new_image_paths[currentIndex];
+        };
+        document.getElementById('retryImage').onclick = function () {
+            generatedImages.style.display = 'none';
+            document.querySelector('.form').dispatchEvent(new Event('submit'));
+        };
+        document.getElementById('selectImage').onclick = function () {
+            const imageContainer = document.querySelector('.image-container');
+            const newImage = document.createElement('img');
+            newImage.src = img.src;
+            const imageWrapper = document.createElement('div');
+            imageWrapper.className = 'image';
+            imageWrapper.appendChild(newImage);
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'delete';
+            deleteButton.innerHTML = 'Delete';
+            deleteButton.onclick = function () {
+                imageContainer.removeChild(imageWrapper);
+            };
+            imageWrapper.appendChild(deleteButton);
+            imageContainer.appendChild(imageWrapper);
+            generatedImages.style.display = 'none';
+        };
+        updateCreateZoomClipButtonVisibility();
+        })
+    .catch(error => {
+        console.error('Error:', error);
+    })
+    .finally(() => {
+        loadingSpinner.style.display = 'none';
+    });
+});
+    </script>
+</body>
+</html>

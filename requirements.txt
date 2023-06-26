@@ -1,0 +1,12 @@
+Flask
+Pillow
+imageio
+numpy
+tqdm
+requests
+opencv-python
+torch
+imageio-ffmpeg
+diffusers
+transformers
+accelerate

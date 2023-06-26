@@ -2,6 +2,12 @@
 # Videos
 <details>
   <summary>Demo Video</summary>
+
+
+
+https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/3b8f5f7b-c9e6-4a74-afd8-e0c3ffad8e36
+
+
   
 https://github.com/airobinnet/AIRobins-Stable-Diffusion-AutoZoom/assets/126980386/cd73af2d-6c67-4410-9d54-4895a9212016
 

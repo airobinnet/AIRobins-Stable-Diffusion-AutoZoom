@@ -290,6 +290,32 @@
         .generated-images .image-controls button:hover {
             background: #8d93ab;
         }
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #3e3e3e;
+            color: white;
+            text-align: center;
+        }
+
+        footer a {
+            color: #fff;
+        }
+
+        footer a:hover {
+            color: #ccc;
+        }
+
+        .gif-preview {
+            position: relative;
+            top: 0;
+            left: 0;
+            width: 80%;
+            object-fit: contain;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -372,7 +398,11 @@
             </div>
         </div>
     </div>
-
+    <br>
+    <br>
+    <footer>
+        <p>Created by <a href="https://airobin.net" target="_blank">AIRobin Solutions</a></p>
+    </footer>
     <script>
     let cropper = null;
     let image_base64 = null;
@@ -408,13 +438,32 @@
             cropBoxResizable: true,
             zoomable: true,
             ready: function () {
-                cropper.setCropBoxData({
-                    left: 0,
-                    top: 0,
-                    width: width,
-                    height: height,
-                });
-            },
+            let containerData = cropper.getContainerData();
+            let cropBoxData = cropper.getCropBoxData();
+            let aspectRatio = cropBoxData.width / cropBoxData.height;
+            let newCropBoxWidth;
+
+            // If the aspect ratio of the crop box is less than the aspect ratio
+            // of the container box, that means the height of the crop box is
+            // limiting the size of the crop box, so we base the new width off
+            // the height of the crop box. If the aspect ratio of the crop box is
+            // greater than the aspect ratio of the container box, that means the
+            // width of the crop box is limiting the size of the crop box, so we
+            // base the new width off the width of the crop box.
+            if (aspectRatio < containerData.width / containerData.height) {
+                newCropBoxWidth = containerData.height * aspectRatio;
+            } else {
+                newCropBoxWidth = containerData.width;
+            }
+
+            // Now we need to set the top, left, width, and height of the crop box.
+            cropper.setCropBoxData({
+                left: (containerData.width - newCropBoxWidth) / 2,
+                top: (containerData.height - newCropBoxWidth / aspectRatio) / 2,
+                width: newCropBoxWidth,
+                height: newCropBoxWidth / aspectRatio,
+            });
+        },
             
         });
     };
